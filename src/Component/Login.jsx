@@ -22,8 +22,6 @@ const Login = () => {
     Password: "",
   });
 
-  console.log(userData);
-
   // Handle sign up data store in firebase
   const HandleSignUp = () => {
     createUserWithEmailAndPassword(
@@ -38,7 +36,8 @@ const Login = () => {
         email: userData.Email,
         password: userData.Password,
       });
-      console.log("data stored");
+      alert("Sign up complete");
+      setcreateAccount(false);
     });
   };
 
@@ -52,13 +51,12 @@ const Login = () => {
     signInWithEmailAndPassword(auth, Email, Password)
       .then((userCredential) => {
         // Signed in
-        console.log("user sign in :", userCredential.user);
+        alert("Sign in successfully");
 
         // Additional logic after login
         navigate("/todo");
       })
       .catch((error) => {
-        console.error("Error signing in: ", error.message);
         alert("Error: " + error.message); // Display the specific error message
       });
   };
@@ -129,7 +127,7 @@ const Login = () => {
                 </div>
                 <div className="form-control mt-6">
                   {createAccount ? (
-                    <button onClick={HandleSignUp} className="btn btn-primary">
+                    <button onClick={HandleSignUp} className="btn btn-accent">
                       Sign up
                     </button>
                   ) : (
