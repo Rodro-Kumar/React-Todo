@@ -11,7 +11,14 @@ const Todo = () => {
   const [editItemId, seteditItemId] = useState();
   const [searchValue, setsearchValue] = useState("");
   const [editInputPlaceHolder, seteditInputPlaceHolder] = useState();
-  const [Task, setTask] = useState([]);
+  const [Task, setTask] = useState(() => {
+    const savedTodos = localStorage.getItem("todos");
+    return savedTodos ? JSON.parse(savedTodos) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(Task));
+  }, [Task]);
 
   // handleAddTask
   const HandleAddtask = () => {
@@ -81,18 +88,6 @@ const Todo = () => {
 
   // date * time
   let date = new Date();
-  // let [second, setsecond] = useState();
-  // let hour12 = date
-  //   .toLocaleString("en-US", { hour: "numeric", hour12: true })
-  //   .slice(3, 5);
-  // let hour = date.toLocaleTimeString().slice(0, 2);
-  // let minit = date.getMinutes();
-
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     setsecond(new Date().getSeconds());
-  //   }, [1000]);
-  // }, []);
 
   return (
     <>
@@ -145,86 +140,51 @@ const Todo = () => {
                 </button>
               </div>
 
-              <div className="relative flex flex-col items-center gap-y-3 w-full mt-6">
+              <div className="listbox relative h-[350px] flex flex-col items-center gap-y-3 w-full mt-6">
                 {/* List */}
-
-                {/* {Task
-                  ? Task.length > 0 &&
-                    Task?.map((item, index) => (
-                      <div
-                        key={index}
-                        className={`relative w-full py-2 px-3 font-poppins font-normal text-base text-sky-500 bg-white ${
-                          underline ? "opacity-70" : "opacity-100"
-                        }`}
-                      >
-                        <input
-                          onClick={() => setunderline(!underline)}
-                          type="checkbox"
-                          className="absolute top-[50%] -translate-y-[50%] left-2"
-                        />
-                        <div className="ml-5 w-[300px]">
-                          <h4
-                            className={`text-ellipsis whitespace-nowrap overflow-hidden ${
-                              underline ? "line-through" : "no-underline"
-                            }`}
-                          >
-                            {item.name ? item.name : "no data"}
-                          </h4>
+                {filteredTodos.length > 0 ? (
+                  filteredTodos?.map((item, index) => (
+                    <div
+                      key={index}
+                      className={`relative w-full py-2 px-3 font-poppins font-normal text-base text-sky-500 bg-white ${
+                        underline === index ? "opacity-70" : "opacity-100"
+                      }`}
+                    >
+                      <input
+                        onClick={() => setunderline(index)}
+                        type="checkbox"
+                        className="absolute top-[50%] -translate-y-[50%] left-2"
+                      />
+                      <div className="ml-5 w-[300px]">
+                        <h4
+                          className={`text-ellipsis whitespace-nowrap overflow-hidden ${
+                            underline === index && "line-through"
+                          }`}
+                        >
+                          {item.name ? item.name : "no data"}
+                        </h4>
+                      </div>
+                      <div className="flex items-center gap-x-2 absolute top-[50%] -translate-y-[50%] right-3 z-50">
+                        <div
+                          onClick={() => HandleEdit(index)}
+                          className="w-6 cursor-pointer"
+                        >
+                          <img src={edit} alt={edit} title="Edit" />
                         </div>
-                        <div className="flex items-center gap-x-2 absolute top-[50%] -translate-y-[50%] right-3 z-50">
-                          <div
-                            onClick={() => HandleEdit(index)}
-                            className="w-6 cursor-pointer"
-                          >
-                            <img src={edit} alt={edit} title="Edit" />
-                          </div>
-                          <div
-                            onClick={() => HandleDelete(item.name)}
-                            className="w-6 cursor-pointer"
-                          >
-                            <img src={delet} alt={delet} title="Delete" />
-                          </div>
+                        <div
+                          onClick={() => HandleDelete(item.name)}
+                          className="w-6 cursor-pointer"
+                        >
+                          <img src={delet} alt={delet} title="Delete" />
                         </div>
                       </div>
-                    ))
-                  :  */}
-                {filteredTodos?.map((item, index) => (
-                  <div
-                    key={index}
-                    className={`relative w-full py-2 px-3 font-poppins font-normal text-base text-sky-500 bg-white ${
-                      underline === index ? "opacity-70" : "opacity-100"
-                    }`}
-                  >
-                    <input
-                      onClick={() => setunderline(index)}
-                      type="checkbox"
-                      className="absolute top-[50%] -translate-y-[50%] left-2"
-                    />
-                    <div className="ml-5 w-[300px]">
-                      <h4
-                        className={`text-ellipsis whitespace-nowrap overflow-hidden ${
-                          underline === index && "line-through"
-                        }`}
-                      >
-                        {item.name ? item.name : "no data"}
-                      </h4>
                     </div>
-                    <div className="flex items-center gap-x-2 absolute top-[50%] -translate-y-[50%] right-3 z-50">
-                      <div
-                        onClick={() => HandleEdit(index)}
-                        className="w-6 cursor-pointer"
-                      >
-                        <img src={edit} alt={edit} title="Edit" />
-                      </div>
-                      <div
-                        onClick={() => HandleDelete(item.name)}
-                        className="w-6 cursor-pointer"
-                      >
-                        <img src={delet} alt={delet} title="Delete" />
-                      </div>
-                    </div>
+                  ))
+                ) : (
+                  <div className=" text-white font-poppins text-2xl mt-11">
+                    <h1>No data here!</h1>
                   </div>
-                ))}
+                )}
 
                 {editINput && (
                   <div className="absolute top-[50%] -translate-y-[50%] left-[50%] -translate-x-[50%]">
@@ -252,10 +212,10 @@ const Todo = () => {
                     </div>
                   </div>
                 )}
-
-                {/* clear all */}
-
-                <div>
+              </div>
+              {/* clear all */}
+              {Task.length > 0 && (
+                <div className="pt-3">
                   <button
                     onClick={handleclearALl}
                     className="bg-red-600 text-white font-poppins font-normal text-base py-2 px-4 hover:bg-red-700 transition-all active:scale-95"
@@ -263,7 +223,7 @@ const Todo = () => {
                     Clear all
                   </button>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

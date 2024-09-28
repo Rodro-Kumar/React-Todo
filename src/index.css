@@ -44,3 +44,16 @@
     @apply align-middle;
   }
 }
+
+@layer components {
+  /* vertical scroll hide */
+  .listbox {
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    overflow-y: scroll;
+  }
+
+  .listbox::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+  }
+}
